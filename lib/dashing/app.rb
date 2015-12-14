@@ -80,6 +80,13 @@ get '/events', provides: 'text/event-stream' do
   end
 end
 
+get '/dataset' do
+  protected!
+  data = { likes: get_history_data('likes'), leads: get_history_data('leads'), profiles: get_history_data('profiles'),
+           payments: get_history_data('payments'), listings: get_history_data('listings') }
+  data.to_json
+end
+
 get '/:dashboard' do
   protected!
   tilt_html_engines.each do |suffix, _|
@@ -169,6 +176,16 @@ end
 def require_glob(relative_glob)
   Dir[File.join(settings.root, relative_glob)].each do |file|
     require file
+  end
+end
+
+def get_history_data(key)
+  history = Sinatra::Application.settings.history
+  puts history[key].gsub('data:', '')
+  if key == 'payments'
+    JSON.parse(history[key].gsub('data:', ''))['value']
+  else
+    JSON.parse(history[key].gsub('data:', ''))['current']
   end
 end
 
