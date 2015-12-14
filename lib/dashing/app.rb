@@ -181,7 +181,6 @@ end
 
 def get_history_data(key)
   history = Sinatra::Application.settings.history
-  puts history[key].gsub('data:', '')
   if key == 'payments'
     JSON.parse(history[key].gsub('data:', ''))['value']
   else
